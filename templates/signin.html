@@ -1,0 +1,37 @@
+{% extends "main.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+
+{% comment %}  {% if form.errors %}
+    <p>Your username and password didn't match. Please try again.</p>
+  {% endif %}
+
+  {% if next %}
+    {% if user.is_authenticated %}
+      <p>Your account doesn't have access to this page. To proceed,
+      please log in with an account that has access.</p>
+    {% else %}
+      <p>Please login to see this page.</p>
+    {% endif %}
+  {% endif %}{% endcomment %}
+
+    <form method="post" action="{% url 'signin' %}">
+        {% if err_msg is not None %}
+            <div class="text-center text-danger">{{ err_msg }}</div><br>
+        {% endif %}
+        {% csrf_token %}
+        <table>
+        <tr>
+            <td>{{ form.username.label_tag }}</td>
+            <td>{{ form.username }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.password.label_tag }}</td>
+            <td>{{ form.password }}</td>
+        </tr>
+        </table>
+        <input type="submit" value="login">
+{#    <input type="hidden" name="next" value="{{ next }}">#}
+    </form>
+
+{% endblock %}

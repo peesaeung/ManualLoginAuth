@@ -1,0 +1,15 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Main Template{% endblock %}</title>
+{#    <script src="{% static 'axios.min.js' %}"></script>#}
+    {% block script %}{% endblock %}
+</head>
+<body>
+<h2>Header</h2>
+{% block content %}{% endblock %}
+<footer style="text-align: center">&copy; {% now 'Y' %}</footer>
+</body>
+</html>

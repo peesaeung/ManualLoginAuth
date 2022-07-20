@@ -1,0 +1,14 @@
+{% extends 'main.html' %}
+{% block style %}
+    <style>
+        form{}
+    </style>
+{% endblock %}
+
+{% block title %}Personal Information{% endblock %}
+{% block content %}
+    <div class="text-center">
+    <h3>Welcome {{ username }}</h3>
+    <a href="{% url 'signout' %}" class="btn-primary">Logout</a>
+    </div>
+{% endblock %}
