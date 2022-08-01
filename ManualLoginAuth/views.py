@@ -37,10 +37,5 @@ def signout(request):
 
 @login_required(login_url='signin')
 def profile(request):
-    #    if request.user.is_authenticated:
-    #        username = request.user
-    #        return render(request, 'profile.html', {'username': username})
-    #    else:
-    #        return redirect(reverse('signin'))
     username = request.user
     return render(request, 'profile.html', {'username': username})

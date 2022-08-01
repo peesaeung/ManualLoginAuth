@@ -8,9 +8,11 @@ https://docs.djangoproject.com/en/3.2/howto/deployment/asgi/
 """
 
 import os
-
+import socketio
 from django.core.asgi import get_asgi_application
+from socketio_server.views import sio
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ManualLoginAuth.settings')
 
-application = get_asgi_application()
+django_app = get_asgi_application()
+application = socketio.ASGIApp(sio, django_app)

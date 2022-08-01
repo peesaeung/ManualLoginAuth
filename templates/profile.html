@@ -8,7 +8,8 @@
 {% block title %}Personal Information{% endblock %}
 {% block content %}
     <div class="text-center">
-    <h3>Welcome {{ username }}</h3>
+    <h3>Welcome {{ username }}</h3><br>
+{# <a href="{% url '' %}">Socket.io</a><br> #}
     <a href="{% url 'signout' %}" class="btn-primary">Logout</a>
     </div>
 {% endblock %}
