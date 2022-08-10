@@ -16,8 +16,8 @@ Including another URLconf
 
 from django.conf.urls import include
 from django.contrib import admin
-from django.urls import path
-from . import views
+from django.urls import path, re_path
+from . import settings, views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,5 +25,6 @@ urlpatterns = [
     path('signin/', views.signin, name='signin'),
     path('profile/', views.profile, name='profile'),
     path('signout/', views.signout, name='signout'),
-    path('socketio/', include('socketio_server.urls')),
+    path('hn-txn/', include('socketio_server.urls')),
+
 ]

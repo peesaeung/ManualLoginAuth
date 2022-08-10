@@ -9,6 +9,8 @@ https://docs.djangoproject.com/en/3.2/howto/deployment/asgi/
 
 import os
 import socketio
+from django.conf import settings
+from django.contrib.staticfiles.handlers import StaticFilesHandler
 from django.core.asgi import get_asgi_application
 from socketio_server.views import sio
 

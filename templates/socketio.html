@@ -1,90 +1,130 @@
 {% extends "main.html" %}
+{% load static %}
 {% block title %}Django-socketio test{% endblock %}
-{% block content %}
-<head>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.js" integrity="sha512-n/4gHW3atM3QqRcbCn6ewmpxcLAHGaDjpEBu4xZd47N0W2oQ+6q7oc3PXstrJYXcbNU1OHdQ1T7pAP+gi5Yu8g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.js" integrity="sha512-9mpsATI0KClwt+xVZfbcf2lJ8IFBAwsubJ6mI3rtULwyM3fBmQFzj0It4tGqxLOGQwGfJdk/G+fANnxfq9/cew==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script type="text/javascript" charset="utf-8">
-        $(document).ready(function(){
-            let socket = io.connect();
 
-            socket.on('connect', function() {
-                socket.emit('my_event', {data: 'I\'m connected!'});
+{% block script %}
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.js" integrity="sha512-9mpsATI0KClwt+xVZfbcf2lJ8IFBAwsubJ6mI3rtULwyM3fBmQFzj0It4tGqxLOGQwGfJdk/G+fANnxfq9/cew==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.js" integrity="sha512-n/4gHW3atM3QqRcbCn6ewmpxcLAHGaDjpEBu4xZd47N0W2oQ+6q7oc3PXstrJYXcbNU1OHdQ1T7pAP+gi5Yu8g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script type="text/html" id="hn-template">
+        <div id="hn-__prefix__">
+            {{ hndataform.empty_form }}
+        </div>
+    </script>
+    <script type="text/javascript" charset="UTF-8">
+        $(document).ready(function(){
+            // Connection
+            const socket = io({autoConnect:true});
+            socket.on('connect', function () {
+                socket.emit('event', {data: 'Transmission Test Passed'});
             });
-            socket.on('disconnect', function() {
+            socket.on('disconnect', function () {
                 $('#log').append('<br>Disconnected');
             });
-            socket.on('my_response', function(msg) {
-                $('#log').append('<br>Received: ' + msg.data);
+            socket.on('response', function (msg) {
+                $('#log').append('<br>' + msg.data);
+            });
+            // HN Page
+            $('#hntext-submit').click(function() {
+                let hnArr = $('textarea#hnbox').val().split(" ", 10);
+                // console.log(hnArr);
+                socket.emit('patient', hnArr);
+            });
+            function add_hn (){
+                let count = $('#hn-set').children().length;
+                const templateMarkup = $('#hn-template').html();
+                let compiledTemplate = templateMarkup.replace(/__prefix__/g, count);
+                if (count < $('#hn-MAX_NUM_FORMS').val()){
+                    $('#hn-set').append(compiledTemplate);
+                    $('#hn-TOTAL_FORMS').attr('value', count+1);
+                }
+            }
+            $('#add-hn-button').click(function() {
+                add_hn()
+            });
+            $('#remove-hn-button').click(function () {
+                if ($('#hn-set').children().length > 1) {
+                    $(':checked').parent().remove();
+                    let count = $('#hn-set').children().length;
+                    $('#hn-TOTAL_FORMS').attr('value', count);
+                    if (($('#hn-set').children().length === 0)) {
+                        add_hn()
+                    }
+                }
+            });
+            $('#hndataform-submit').click(function() {
+                let hnRaw = $(':text').serializeArray();
+                //console.log(hnRaw);
+                let hnArr = new Array();
+                for (let i in hnRaw) {
+                    hnArr.push(hnRaw[i].value)
+                }
+                //console.log(hnArr)
+                socket.emit('patient', hnArr);
+                {#socket.emit('patient', {#}
+                {#    hn: $('#hn').val(),#}
+                {#    birthdate: $('#birthdate').val(),#}
+                {#    gender: $('#gender').val(),#}
+                {#    name: $('#name').val(),#}
+                {#    register: $('#register').prop('checked')#}
+
+                {#return false;#}
+            });
+            socket.on('hn_response', function(msg) {
+                $('#hn_log').text(msg.data)
+                //        {#$('#hn_log').html(msg.data + '<br>' + msg.register)#}
             });
 
-            // event handler for server sent data
-            // the data is displayed in the "Received" section of the page
-            // handlers for the different forms in the page
-            // these send data to the server in a variety of ways
-            $('form#emit').submit(function(event) {
-                socket.emit('my_event', {data: $('#emit_data').val()});
+            $('form#visit').submit(function(event) {
+                socket.emit('visit', {txn: $('#txn').val(), hn: $('#hn').val()});
                 return false;
             });
-            $('form#broadcast').submit(function(event) {
-                socket.emit('my_broadcast_event', {data: $('#broadcast_data').val()});
+            socket.on('txn_response', function(msg) {
+                $('#txn_log').text(msg.data);
+            });
+
+            $('form#item').submit(function(event) {
+                socket.emit('item', {ser: $('#ser').val(), txn: $('#txn').val(), hn: $('#hn').val()});
                 return false;
             });
-            $('form#join').submit(function(event) {
-                socket.emit('join', {room: $('#join_room').val()});
-                return false;
-            });
-            $('form#leave').submit(function(event) {
-                socket.emit('leave', {room: $('#leave_room').val()});
-                return false;
-            });
-            $('form#send_room').submit(function(event) {
-                socket.emit('my_room_event', {room: $('#room_name').val(), data: $('#room_data').val()});
-                return false;
-            });
-            $('form#close').submit(function(event) {
-                socket.emit('close room', {room: $('#close_room').val()});
-                return false;
-            });
-            $('form#disconnect').submit(function(event) {
-                socket.emit('disconnect request');
-                return false;
+            socket.on('ser_response', function(msg) {
+                $('#ser_log').text(msg.data);
             });
         });
     </script>
-</head>
-<body>
-    <h1>Django-socketio test</h1>
-    <h2>Send:</h2>
-    <form id="emit" method="POST" action='#'>
-        <input type="text" name="emit_data" id="emit_data" placeholder="Message">
-        <input type="submit" value="Echo">
-    </form>
-    <form id="broadcast" method="POST" action='#'>
-        <input type="text" name="broadcast_data" id="broadcast_data" placeholder="Message">
-        <input type="submit" value="Broadcast">
-    </form>
-    <form id="join" method="POST" action='#'>
-        <input type="text" name="join_room" id="join_room" placeholder="Room Name">
-        <input type="submit" value="Join Room">
-    </form>
-    <form id="leave" method="POST" action='#'>
-        <input type="text" name="leave_room" id="leave_room" placeholder="Room Name">
-        <input type="submit" value="Leave Room">
-    </form>
-    <form id="send_room" method="POST" action='#'>
-        <input type="text" name="room_name" id="room_name" placeholder="Room Name">
-        <input type="text" name="room_data" id="room_data" placeholder="Message">
-        <input type="submit" value="Send to Room">
-    </form>
-    <form id="close" method="POST" action="#">
-        <input type="text" name="close_room" id="close_room" placeholder="Room Name">
-        <input type="submit" value="Close Room">
-    </form>
-    <form id="disconnect" method="POST" action="#">
-        <input type="submit" value="Disconnect">
-    </form>
-    <h2>Receive:</h2>
-    <div><p id="log"></p></div>
-</body>
+    {% block formscript %}{% endblock %}
+{% endblock %}
+
+{% block content %}
+    {% block nav %}
+        <a href="{% url 'patient' %}">Patient Data</a>
+        <a href="{% url 'visit' %}">Visit Data</a>
+        <br><a href="{% url 'profile' %}">Back</a><br>
+        <div><p id="log"></p></div><br>
+    {% endblock %}
+    {% comment %}
+    <h3>Patient</h3>
+    <form id="patient" method="post">
+        {% csrf_token %}
+        {{ patientdataform.management_form }}
+        <div id="patient-set">
+            {% for patient in patientdataform %}
+                <div id="hn-{{ forloop.counter0 }}">
+                    {{ patient.as_p }}
+                </div>
+            {% endfor %}
+        </div>
+{#       {{ patientdataform.as_p }} #}
+{#                <input type="text" name="hn" id="hn" placeholder="HN">#}
+        <input type="checkbox" id="register" value="Register" checked>
+        <label for="register">Register</label><br>
+        <a href="#" id="add-hn-button" class="btn btn-info add-hn">Add more HN</a>
+        <a href="#" id="remove-hn-button" class="btn btn-info remove-hn">Remove Selected</a>
+{#        <input type="button" value="Add more HN">#}
+{#        <input type="button" value="Remove Selected">#}
+        <br><input type="submit" value="Submit HN">
+
+        <br><div><p id="hn_log"></p></div>
+    </form>{% endcomment %}
+
+    {% block form %}{% endblock %}
 {% endblock %}

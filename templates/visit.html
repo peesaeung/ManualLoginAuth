@@ -1,0 +1,32 @@
+{% extends "socketio.html" %}
+{% block title %}Visit Data{% endblock %}
+{% block formscript %}
+
+{% endblock %}
+{% block nav %}
+    <a href="{% url 'socketio_web' %}">Back</a><br>
+{% endblock %}
+{% block form %}
+    <h3>Visit</h3>
+    <form id="visit" method="post">
+        {% csrf_token %}
+        <table>
+            <td>
+                <input type="text" name="txn" id="txn" placeholder="Visit">
+                <input type="submit" value="Submit Visit">
+            </td>
+            <td><div><p id="txn_log"></p></div></td>
+        </table>
+    </form>
+    <h3>Item</h3>
+    <form id="item" method="post">
+        {% csrf_token %}
+        <table>
+            <td>
+                <input type="text" name="ser" id="ser" placeholder="Item">
+                <input type="submit" value="Submit Item">
+            </td>
+            <td><div><p id="ser_log"></p></div></td>
+        </table>
+    </form>
+{% endblock %}
