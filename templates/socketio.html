@@ -3,8 +3,8 @@
 {% block title %}Django-socketio test{% endblock %}
 
 {% block script %}
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.js" integrity="sha512-9mpsATI0KClwt+xVZfbcf2lJ8IFBAwsubJ6mI3rtULwyM3fBmQFzj0It4tGqxLOGQwGfJdk/G+fANnxfq9/cew==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.js" integrity="sha512-n/4gHW3atM3QqRcbCn6ewmpxcLAHGaDjpEBu4xZd47N0W2oQ+6q7oc3PXstrJYXcbNU1OHdQ1T7pAP+gi5Yu8g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/socket.io@4.5.1/client-dist/socket.io.js"></script>
     <script type="text/html" id="hn-template">
         <div id="hn-__prefix__">
             {{ hndataform.empty_form }}
@@ -24,11 +24,13 @@
                 $('#log').append('<br>' + msg.data);
             });
             // HN Page
+            // HN only, no other data
             $('#hntext-submit').click(function() {
                 let hnArr = $('textarea#hnbox').val().split(" ", 10);
                 // console.log(hnArr);
                 socket.emit('patient', hnArr);
             });
+            // HN with full data (WIP)
             function add_hn (){
                 let count = $('#hn-set').children().length;
                 const templateMarkup = $('#hn-template').html();
@@ -46,7 +48,8 @@
                     $(':checked').parent().remove();
                     let count = $('#hn-set').children().length;
                     $('#hn-TOTAL_FORMS').attr('value', count);
-                    if (($('#hn-set').children().length === 0)) {
+                    // if (($('#hn-set').children().length === 0)) {
+                    if (count === 0) {
                         add_hn()
                     }
                 }
@@ -54,26 +57,35 @@
             $('#hndataform-submit').click(function() {
                 let hnRaw = $(':text').serializeArray();
                 //console.log(hnRaw);
-                let hnArr = new Array();
+                let hnArr = [];
                 for (let i in hnRaw) {
                     hnArr.push(hnRaw[i].value)
                 }
                 //console.log(hnArr)
                 socket.emit('patient', hnArr);
-                {#socket.emit('patient', {#}
-                {#    hn: $('#hn').val(),#}
-                {#    birthdate: $('#birthdate').val(),#}
-                {#    gender: $('#gender').val(),#}
-                {#    name: $('#name').val(),#}
-                {#    register: $('#register').prop('checked')#}
 
-                {#return false;#}
+                {% comment %}
+                data = [];
+                // Process Data
+                for (...) {
+                    data.push(...)
+                }
+                console.log(data)
+                /* data should be looked like this
+                data = [
+                    {"HN": "01234", "birthDate": "1987-06-05", "gender": True},
+                    {"HN": "56789", "birthDate": "2000-12-31", "gender": False},
+                ]
+                */
+                socket.emit('patient', {data, $('#register').prop('checked')};
+                {% endcomment %}
+                return false;
             });
             socket.on('hn_response', function(msg) {
                 $('#hn_log').text(msg.data)
                 //        {#$('#hn_log').html(msg.data + '<br>' + msg.register)#}
             });
-
+            //
             $('form#visit').submit(function(event) {
                 socket.emit('visit', {txn: $('#txn').val(), hn: $('#hn').val()});
                 return false;
@@ -88,6 +100,7 @@
             });
             socket.on('ser_response', function(msg) {
                 $('#ser_log').text(msg.data);
+                {% endcomment %}
             });
         });
     </script>

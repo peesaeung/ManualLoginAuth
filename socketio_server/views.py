@@ -1,6 +1,6 @@
 import socketio
 from django.contrib.auth.decorators import login_required
-from django.forms import formset_factory, inlineformset_factory
+from django.forms import formset_factory
 from django.shortcuts import render
 from .forms import PatientData, HNArray, HNTextField
 
@@ -30,9 +30,9 @@ def patient_page(request):
 
 
 # As Join room to ensure that only current HN will be collected.
-# Patient data (HN) >> Upsert HN >> PID
-@sio.on('patient')
-async def patient(sid, message):  # sio.on('patient', HN)
+
+@sio.on('patient')  # sio.on('patient', HN)
+async def patient(sid, message):  # Receive only HN
     # sio.enter_room(sid, message['hn'])
     print(message)
     await sio.emit('hn_response', {
@@ -40,6 +40,18 @@ async def patient(sid, message):  # sio.on('patient', HN)
         # 'data': 'HN: ' + message['hn'] + ' Date of Birth: ' + message['birthdate'] + ' Gender: ' + message['gender'],
         # 'register': message['register']
     }, room=sid)
+    data = list()
+    register = True
+    # Querying by HN
+    # Patient data (HN) >> Upsert HN >> PID
+    """
+    # data should be looked like this
+    data = [
+        {"HN": "01234", "birthDate": "1987-06-05", "gender": True},
+        {"HN": "56789", "birthDate": "2000-12-31", "gender": False},
+    ]
+    """
+    await sio.emit('patient_next', {data, register}, room=sid)
 
 
 @login_required(login_url='signin')
@@ -85,9 +97,9 @@ async def test_message(sid, message):
     await sio.emit('response', {'data': message['data']}, room=sid)
 
 
-@sio.on('connect')
-async def test_connect(sid, environ):
-    await sio.emit('response', {'data': 'Connected'}, room=sid)
+# @sio.on('connect')
+# async def test_connect(sid, environ):
+#   await sio.emit('response', {'data': 'Connected'}, room=sid)
 
 
 @sio.on('disconnect request')

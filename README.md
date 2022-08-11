@@ -1,4 +1,5 @@
 # ManualLoginAuth
 Django Built-in Authentication
 
-Run Socket.IO simultaneously
+Run socket.IO simultaneously
+

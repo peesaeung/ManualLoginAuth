@@ -9,7 +9,7 @@ class HNTextField(forms.Form):
     HN = forms.CharField(
         label='HN', required=True,
         widget=forms.Textarea(
-            attrs={'id':'hnbox', 'placeholder': 'Up to 10 HNs, separated by space bar', 'cols':'30', 'rows': '5'}
+            attrs={'id': 'hnbox', 'placeholder': 'Up to 10 HNs, separated by space bar', 'cols': '30', 'rows': '5'}
         )
     )
 

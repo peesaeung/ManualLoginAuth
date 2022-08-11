@@ -764,8 +764,8 @@
     /**
      * Transport abstract constructor.
      *
-     * @param {Object} options.
      * @api private
+     * @param opts
      */
     function Transport(opts) {
       var _this2;
@@ -952,8 +952,8 @@
    * Compiles a querystring
    * Returns string representation of the object
    *
-   * @param {Object}
    * @api private
+   * @param obj
    */
   function encode(obj) {
     var str = '';
@@ -1327,8 +1327,10 @@
     /**
      * Request constructor
      *
-     * @param {Object} options
-     * @api public
+     * @param uri
+     * @param opts
+     * @param uri
+     * @param opts
      */
     function Request(uri, opts) {
       var _this8;
@@ -1830,7 +1832,6 @@
      * Socket constructor.
      *
      * @param {String|Object} uri or options
-     * @param {Object} opts - options
      * @api public
      */
     function Socket(uri) {
@@ -2505,8 +2506,6 @@
    * URL parser.
    *
    * @param uri - url
-   * @param path - the request path of the connection
-   * @param loc - An object meant to mimic window.location.
    *        Defaults to window.location.
    * @public
    */
