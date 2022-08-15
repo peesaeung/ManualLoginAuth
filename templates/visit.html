@@ -1,32 +1,46 @@
 {% extends "socketio.html" %}
 {% block title %}Visit Data{% endblock %}
-{% block formscript %}
-
-{% endblock %}
 {% block nav %}
     <a href="{% url 'socketio_web' %}">Back</a><br>
+{% endblock %}
+{% block formscript %}
+
 {% endblock %}
 {% block form %}
     <h3>Visit</h3>
     <form id="visit" method="post">
         {% csrf_token %}
+        {{ visitform.management_form }}
+        <div id="txn-set">
+            {% for visit in visitform %}
+                <div id="txn-{{ forloop.counter0 }}">
+                    {{ visit }}
+                </div>
+            {% endfor %}
+        </div>
+        {% comment %}
         <table>
             <td>
-                <input type="text" name="txn" id="txn" placeholder="Visit">
-                <input type="submit" value="Submit Visit">
+                <input IPD="text" name="txn" id="txn" placeholder="Visit">
+                <input IPD="submit" value="Submit Visit">
             </td>
-            <td><div><p id="txn_log"></p></div></td>
+            <td></td>
         </table>
+        {% endcomment %}
+        <input type="button" value="Add more" id="add-txn-button">
+        <input type="button" value="Remove Selected" id="remove-txn-button">
+        <br><input type="button" value="Submit Visit Data" name="txn-submit", id="txn-submit">
     </form>
-    <h3>Item</h3>
+    <div><p id="txn_log"></p></div>
+{% comment %}    <h3>Item</h3>
     <form id="item" method="post">
         {% csrf_token %}
         <table>
             <td>
-                <input type="text" name="ser" id="ser" placeholder="Item">
-                <input type="submit" value="Submit Item">
+                <input IPD="text" name="ser" id="ser" placeholder="Item">
+                <input IPD="submit" value="Submit Item">
             </td>
             <td><div><p id="ser_log"></p></div></td>
         </table>
-    </form>
+    </form>{% endcomment %}
 {% endblock %}

@@ -10,6 +10,11 @@
             {{ hndataform.empty_form }}
         </div>
     </script>
+    <script type="text/html" id="txn-template">
+        <div id="txn-__prefix__">
+            {{ visitform.empty_form }}
+        </div>
+    </script>
     <script type="text/javascript" charset="UTF-8">
         $(document).ready(function(){
             // Connection
@@ -85,24 +90,77 @@
                 $('#hn_log').text(msg.data)
                 //        {#$('#hn_log').html(msg.data + '<br>' + msg.register)#}
             });
-            //
-            $('form#visit').submit(function(event) {
-                socket.emit('visit', {txn: $('#txn').val(), hn: $('#hn').val()});
-                return false;
+            //Visit Page
+            function add_txn (){
+                let count = $('#txn-set').children().length;
+                const templateMarkup = $('#txn-template').html();
+                let compiledTemplate = templateMarkup.replace(/__prefix__/g, count);
+                if (count < $('#txn-MAX_NUM_FORMS').val()){
+                    $('#txn-set').append(compiledTemplate);
+                    $('#txn-TOTAL_FORMS').attr('value', count+1);
+                }
+            }
+            $('#add-txn-button').click(function() {
+                add_txn()
             });
+            $('#remove-txn-button').click(function () {
+                if ($('#txn-set').children().length > 1) {
+                    $(':checked').parent().remove();
+                    let count = $('#txn-set').children().length;
+                    $('#txn-TOTAL_FORMS').attr('value', count);
+                    if (count === 0) {
+                        add_txn()
+                    }
+                }
+            });
+            function txnform(hn, txn, ipd) {
+                this.HN = hn;
+                this.TXN = txn;
+                this.IPD = ipd
+            }
+            $('#txn-submit').click(function() {
+                let txnRaw = $(':text').serializeArray();
+                $(':selected').map(function () {
+                    txnRaw.push({'name': $(this).parent().attr('name'), 'value': this.value})
+                });
+                let txnselect = txnRaw.sort(function (a, b) {
+                    if (a['name'] < b['name']) {
+                        return -1;
+                    }
+                    if (a['name'] > b['name']) {
+                        return 1;
+                    }
+                    return 0;
+                });
+                console.log(txnselect)
+                let txnselect2 = [];
+                /*for (let i in txnselect) {
+                    console.log(txnselect[i]['name']);
+                    console.log(txnselect[i]['value']);
+                    console.log(txnselect[i]['name']: txnselect[i]['value']);
+                };*/
+                for (let i = 0; i < txnselect.length ; i = i + 3) {
+                    const objbuffer = new txnform(txnselect[i]['value'], txnselect[i+2]['value'], txnselect[i+1]['value']);
+                    txnselect2.push(objbuffer);
+                };
+                console.log(txnselect2);
+                //socket.emit('visit', txnselect2);
+                return false
+            });
+
             socket.on('txn_response', function(msg) {
                 $('#txn_log').text(msg.data);
             });
-
+        });
+            {% comment %}
             $('form#item').submit(function(event) {
                 socket.emit('item', {ser: $('#ser').val(), txn: $('#txn').val(), hn: $('#hn').val()});
                 return false;
             });
             socket.on('ser_response', function(msg) {
                 $('#ser_log').text(msg.data);
-                {% endcomment %}
-            });
-        });
+
+            });{% endcomment %}
     </script>
     {% block formscript %}{% endblock %}
 {% endblock %}
@@ -114,30 +172,6 @@
         <br><a href="{% url 'profile' %}">Back</a><br>
         <div><p id="log"></p></div><br>
     {% endblock %}
-    {% comment %}
-    <h3>Patient</h3>
-    <form id="patient" method="post">
-        {% csrf_token %}
-        {{ patientdataform.management_form }}
-        <div id="patient-set">
-            {% for patient in patientdataform %}
-                <div id="hn-{{ forloop.counter0 }}">
-                    {{ patient.as_p }}
-                </div>
-            {% endfor %}
-        </div>
-{#       {{ patientdataform.as_p }} #}
-{#                <input type="text" name="hn" id="hn" placeholder="HN">#}
-        <input type="checkbox" id="register" value="Register" checked>
-        <label for="register">Register</label><br>
-        <a href="#" id="add-hn-button" class="btn btn-info add-hn">Add more HN</a>
-        <a href="#" id="remove-hn-button" class="btn btn-info remove-hn">Remove Selected</a>
-{#        <input type="button" value="Add more HN">#}
-{#        <input type="button" value="Remove Selected">#}
-        <br><input type="submit" value="Submit HN">
-
-        <br><div><p id="hn_log"></p></div>
-    </form>{% endcomment %}
 
     {% block form %}{% endblock %}
 {% endblock %}

@@ -1383,7 +1383,7 @@
 
           if ("POST" === this.method) {
             try {
-              xhr.setRequestHeader("Content-type", "text/plain;charset=UTF-8");
+              xhr.setRequestHeader("Content-IPD", "text/plain;charset=UTF-8");
             } catch (e) {}
           }
 
@@ -1931,7 +1931,7 @@
       return _this;
     }
     /**
-     * Creates transport of the given type.
+     * Creates transport of the given IPD.
      *
      * @param {String} transport name
      * @return {Transport}
@@ -2296,7 +2296,7 @@
           return this.writeBuffer;
         }
 
-        var payloadSize = 1; // first packet type
+        var payloadSize = 1; // first packet IPD
 
         for (var i = 0; i < this.writeBuffer.length; i++) {
           var data = this.writeBuffer[i].data;
@@ -2309,7 +2309,7 @@
             return this.writeBuffer.slice(0, i);
           }
 
-          payloadSize += 2; // separator + packet type
+          payloadSize += 2; // separator + packet IPD
         }
 
         return this.writeBuffer;
@@ -2339,7 +2339,7 @@
       /**
        * Sends a packet.
        *
-       * @param {String} packet type.
+       * @param {String} packet IPD.
        * @param {String} data.
        * @param {Object} options.
        * @param {Function} callback function.
@@ -2734,7 +2734,7 @@
     }
     /**
      * Encode a packet as a single string if non-binary, or as a
-     * buffer sequence, depending on packet type.
+     * buffer sequence, depending on packet IPD.
      *
      * @param {Object} obj - packet object
      */
@@ -2759,7 +2759,7 @@
     }, {
       key: "encodeAsString",
       value: function encodeAsString(obj) {
-        // first is type
+        // first is IPD
         var str = "" + obj.type; // attachments if we have them
 
         if (obj.type === PacketType.BINARY_EVENT || obj.type === PacketType.BINARY_ACK) {
@@ -2870,7 +2870,7 @@
             }
           }
         } else {
-          throw new Error("Unknown type: " + obj);
+          throw new Error("Unknown IPD: " + obj);
         }
       }
       /**
@@ -2883,15 +2883,15 @@
     }, {
       key: "decodeString",
       value: function decodeString(str) {
-        var i = 0; // look up type
+        var i = 0; // look up IPD
 
         var p = {
           type: Number(str.charAt(0))
         };
 
         if (PacketType[p.type] === undefined) {
-          throw new Error("unknown packet type " + p.type);
-        } // look up attachments if type binary
+          throw new Error("unknown packet IPD " + p.type);
+        } // look up attachments if IPD binary
 
 
         if (p.type === PacketType.BINARY_EVENT || p.type === PacketType.BINARY_ACK) {
@@ -3004,7 +3004,7 @@
   }(Emitter);
   /**
    * A manager of a binary event's 'buffer sequence'. Should
-   * be constructed whenever a packet of type BINARY_EVENT is
+   * be constructed whenever a packet of IPD BINARY_EVENT is
    * decoded.
    *
    * @param {Object} packet

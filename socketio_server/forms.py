@@ -19,7 +19,7 @@ class PatientData(HNArray):
     #     label='Register', required=False,
     #     widget=forms.CheckboxInput(attrs={'id': 'regis', 'value': 'register', 'checked': 'True'})
     birthDate = forms.DateField(
-        label='Date of Birth', required=False, widget=forms.DateInput(attrs={'id': 'birthdate', 'type': 'date'})
+        label='Date of Birth', required=False, widget=forms.DateInput(attrs={'id': 'birthdate', 'IPD': 'date'})
     )
     gender = forms.ChoiceField(
         label='Gender', required=False, choices=[(True, 'Male'), (False, 'Female')],
@@ -52,9 +52,9 @@ class SecretData(HNArray):
 
 class VisitData(HNArray):
     TXN = forms.CharField(label='TXN', required=True, widget=forms.TextInput(attrs={'id': 'txn', 'placeholder': 'TXN'}))
-    type = forms.ChoiceField(
-        label='Type', required=True, choices=[(True, 'IPD'), (False, 'OPD')], widget=forms.Select(attrs={'id': 'type'}))
-    visittime = forms.DateTimeField(
-        label='Visit Datetime', required=True,
-        widget=forms.DateTimeInput(attrs={'id': 'visittime', 'type': 'datetime'})
-    )
+    IPD = forms.ChoiceField(
+        label='Type', required=True, choices=[(True, 'IPD'), (False, 'OPD')], widget=forms.Select(attrs={'id': 'ipd'}))
+    # visittime = forms.DateTimeField(
+    #     label='Visit Datetime', required=True,
+    #     widget=forms.DateTimeInput(attrs={'id': 'visittime', 'IPD': 'datetime'})
+    # )

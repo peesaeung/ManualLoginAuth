@@ -2,12 +2,13 @@ import socketio
 from django.contrib.auth.decorators import login_required
 from django.forms import formset_factory
 from django.shortcuts import render
-from .forms import PatientData, HNArray, HNTextField
+from .forms import PatientData, HNArray, HNTextField, VisitData
 
 sio = socketio.AsyncServer(async_mode='asgi')
-background_task_started = False
-patientdataset = formset_factory(PatientData, can_delete=True, max_num=10, absolute_max=1000)
+# background_task_started = False
+# patientdataset = formset_factory(PatientData, can_delete=True, max_num=10, absolute_max=1000)
 hnformset = formset_factory(HNArray, can_delete=True, max_num=10, absolute_max=1000)
+visitformset = formset_factory(VisitData, can_delete=True, max_num=10, absolute_max=1000)
 
 
 @login_required(login_url='signin')
@@ -54,23 +55,63 @@ async def patient(sid, message):  # Receive only HN
     await sio.emit('patient_next', {data, register}, room=sid)
 
 
+# Visit data (HN, TXN) >> Transform >> PID, TXN >> Upsert TXN >> PID, VID
 @login_required(login_url='signin')
 def visit_page(request):
-    return render(request, 'visit.html')
+    visitform = visitformset(prefix='txn', auto_id=True)
+    return render(request, 'visit.html', {'visitform': visitform})
 
 
-#    return render(request, 'visit.html', {'patientdataform': patientdataform})
+@sio.on('visit')  # sio.on('visit', req)
+async def visit(sid, message):
+    print(message)
+    await sio.emit('txn_response', {'data': message}, room=sid)
+
+    data = list()
+    register = True
+    # Querying
+    # Transform >> PID, TXN >> Upsert TXN >> PID, VID
+    """
+    # data should be looked like this
+    [
+        {
+            "HN":"00000",
+            "TXN": "123456789",
+            "IPD": 0,
+            "visitTime": "2022-02-02T20:22:02Z",
+            "dischargeTime": "2022-02-02T22:22:22Z",
+            "dischargeStatus": 2,
+            "dischargeType": 1
+        },
+        {
+            "HN":"00001",
+            "TXN": "2345678",
+            "IPD": 0,
+            "visitTime": "2022-02-02T22:22:22Z",
+            "dischargeTime": "2022-02-22T02:20:00Z",
+            "dischargeStatus": 3,
+            "dischargeType": 5
+        },
+        {
+            "HN":"00001",
+            "TXN": "A987654VIP",
+            "IPD": 1,
+            "visitTime": "2022-02-02T02:20:00Z",
+            "dischargeTime": "2022-02-22T22:22:22Z",
+            "relatedTXN": ["2345678"],
+            "dischargeStatus": 2,
+            "dischargeType": 1,
+            "lengthOfStay": 23
+        }
+    ]
+    """
+    await sio.emit('thVisit', {data, register}, room=sid)
+
 
 
 @sio.on('connect')
 async def test_connect(sid, environ):
     await sio.emit('response', {'data': 'Connected to Database'}, room=sid)
-
-
-# Visit data (HN, TXN) >> Transform >> PID, TXN >> Upsert TXN >> PID, VID
-@sio.on('visit')
-async def visit(sid, message):
-    await sio.emit('txn_response', {'data': message['txn']}, room=message['hn'])
 
 
 # Item data (HN, TXN, SER) >> Transform >> PID, VID, IID
