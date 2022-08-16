@@ -52,7 +52,7 @@ async def patient(sid, message):  # Receive only HN
         {"HN": "56789", "birthDate": "2000-12-31", "gender": False},
     ]
     """
-    await sio.emit('patient_next', {data, register}, room=sid)
+    # await sio.emit('patient_next', {data, register}, room=sid)
 
 
 # Visit data (HN, TXN) >> Transform >> PID, TXN >> Upsert TXN >> PID, VID
@@ -105,8 +105,7 @@ async def visit(sid, message):
         }
     ]
     """
-    await sio.emit('thVisit', {data, register}, room=sid)
-
+    # await sio.emit('thVisit', {data, register}, room=sid)
 
 
 @sio.on('connect')

@@ -44,17 +44,17 @@
                     set.append(compiledTemplate);
                     total.attr('value', count+1);
                 }
-            };
+            }
             function remove_line(set, template, maxnum, total) {
                 //if (set.children().length > 1) {
-                    $(':checkbox:checked').parent().remove();
-                    let count = set.children().length;
-                    set.attr('value', count);
-                    if (count === 0) {
-                        add_line(set, template, maxnum, total);
-                    }
+                $(':checkbox:checked').parent().remove();
+                let count = set.children().length;
+                set.attr('value', count);
+                if (count === 0) {
+                    add_line(set, template, maxnum, total);
+                }
                 //}
-            };
+            }
             $('#add-hn-button').click(function() {
                 add_line($('#hn-set'), $('#hn-template'), $('#hn-MAX_NUM_FORMS'), $('#hn-TOTAL_FORMS'));
             });
@@ -95,7 +95,6 @@
                 */
                 socket.emit('patient', {data, $('#register').prop('checked')};
                 {% endcomment %}
-                return false;
             });
             socket.on('hn_response', function(msg) {
                 $('#hn_log').text(msg.data)
@@ -114,10 +113,10 @@
                 }*/
                 remove_line($('#txn-set'), $('#txn-template'), $('#txn-MAX_NUM_FORMS'), $('#txn-TOTAL_FORMS'));
             });
-            function txnform(hn, txn, ipd) {
+            function TXNForm(hn, txn, ipd) {
                 this.HN = hn;
                 this.TXN = txn;
-                this.IPD = ipd
+                this.IPD = ipd;
             }
             $('#txn-submit').click(function() {
                 let txnRaw = $(':text').serializeArray();
@@ -141,12 +140,11 @@
                     console.log(txnselect[i]['name']: txnselect[i]['value']);
                 };*/
                 for (let i = 0; i < txnselect.length ; i = i + 3) {
-                    const objbuffer = new txnform(txnselect[i]['value'], txnselect[i+2]['value'], txnselect[i+1]['value']);
+                    const objbuffer = new TXNForm(txnselect[i]['value'], txnselect[i+2]['value'], txnselect[i+1]['value']);
                     txnselect2.push(objbuffer);
-                };
+                }
                 console.log(txnselect2);
-                //socket.emit('visit', txnselect2);
-                return false
+                socket.emit('visit', txnselect2);
             });
 
             socket.on('txn_response', function(msg) {
