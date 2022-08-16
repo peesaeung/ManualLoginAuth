@@ -29,35 +29,46 @@
                 $('#log').append('<br>' + msg.data);
             });
             // HN Page
-            // HN only, no other data
+            // Textarea
             $('#hntext-submit').click(function() {
                 let hnArr = $('textarea#hnbox').val().split(" ", 10);
                 // console.log(hnArr);
                 socket.emit('patient', hnArr);
             });
-            // HN with full data (WIP)
-            function add_hn (){
-                let count = $('#hn-set').children().length;
-                const templateMarkup = $('#hn-template').html();
+            // Text Input
+            function add_line(set, template, maxnum, total) {
+                let count = set.children().length;
+                const templateMarkup = template.html();
                 let compiledTemplate = templateMarkup.replace(/__prefix__/g, count);
-                if (count < $('#hn-MAX_NUM_FORMS').val()){
-                    $('#hn-set').append(compiledTemplate);
-                    $('#hn-TOTAL_FORMS').attr('value', count+1);
+                if (count < maxnum.val()){
+                    set.append(compiledTemplate);
+                    total.attr('value', count+1);
                 }
-            }
+            };
+            function remove_line(set, template, maxnum, total) {
+                //if (set.children().length > 1) {
+                    $(':checkbox:checked').parent().remove();
+                    let count = set.children().length;
+                    set.attr('value', count);
+                    if (count === 0) {
+                        add_line(set, template, maxnum, total);
+                    }
+                //}
+            };
             $('#add-hn-button').click(function() {
-                add_hn()
+                add_line($('#hn-set'), $('#hn-template'), $('#hn-MAX_NUM_FORMS'), $('#hn-TOTAL_FORMS'));
             });
             $('#remove-hn-button').click(function () {
-                if ($('#hn-set').children().length > 1) {
+                remove_line($('#hn-set'), $('#hn-template'), $('#hn-MAX_NUM_FORMS'), $('#hn-TOTAL_FORMS'));
+                /*if ($('#hn-set').children().length > 1) {
                     $(':checked').parent().remove();
                     let count = $('#hn-set').children().length;
                     $('#hn-TOTAL_FORMS').attr('value', count);
                     // if (($('#hn-set').children().length === 0)) {
                     if (count === 0) {
-                        add_hn()
+                        add_line($('#hn-set'), $('#hn-template'), $('#hn-MAX_NUM_FORMS'), $('#hn-TOTAL_FORMS'));
                     }
-                }
+                }*/
             });
             $('#hndataform-submit').click(function() {
                 let hnRaw = $(':text').serializeArray();
@@ -91,27 +102,17 @@
                 //        {#$('#hn_log').html(msg.data + '<br>' + msg.register)#}
             });
             //Visit Page
-            function add_txn (){
-                let count = $('#txn-set').children().length;
-                const templateMarkup = $('#txn-template').html();
-                let compiledTemplate = templateMarkup.replace(/__prefix__/g, count);
-                if (count < $('#txn-MAX_NUM_FORMS').val()){
-                    $('#txn-set').append(compiledTemplate);
-                    $('#txn-TOTAL_FORMS').attr('value', count+1);
-                }
-            }
             $('#add-txn-button').click(function() {
-                add_txn()
+                add_line($('#txn-set'), $('#txn-template'), $('#txn-MAX_NUM_FORMS'), $('#txn-TOTAL_FORMS'));
             });
             $('#remove-txn-button').click(function () {
-                if ($('#txn-set').children().length > 1) {
-                    $(':checked').parent().remove();
-                    let count = $('#txn-set').children().length;
-                    $('#txn-TOTAL_FORMS').attr('value', count);
-                    if (count === 0) {
-                        add_txn()
-                    }
-                }
+                /*$(':checkbox:checked').parent().remove();
+                let count = $('#txn-set').children().length;
+                $('#txn-TOTAL_FORMS').attr('value', count);
+                if (count === 0) {
+                    add_line($('#txn-set'), $('#txn-template'), $('#txn-MAX_NUM_FORMS'), $('#txn-TOTAL_FORMS'));
+                }*/
+                remove_line($('#txn-set'), $('#txn-template'), $('#txn-MAX_NUM_FORMS'), $('#txn-TOTAL_FORMS'));
             });
             function txnform(hn, txn, ipd) {
                 this.HN = hn;
