@@ -1,4 +1,4 @@
-django~=3.2.5
+django~=4.1
 pathlib~=1.0.1
 python-socketio
 uvicorn~=0.16.0
