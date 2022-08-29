@@ -31,7 +31,10 @@ def signin(request):
         form = SigninForm()
     return render(
         request, 'signin.html',
-        {'form': form, 'err_msg': err_msg}
+        {
+            'form': form,
+            'err_msg': err_msg
+        }
     )
 
 
