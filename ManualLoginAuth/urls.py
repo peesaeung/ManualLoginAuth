@@ -33,5 +33,4 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('signout/', views.signout, name='signout'),
     path('hn-txn/', include('socketio_server.urls')),
-
 ]

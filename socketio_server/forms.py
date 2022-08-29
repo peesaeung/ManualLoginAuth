@@ -2,15 +2,26 @@ from django import forms
 
 
 class HNArray(forms.Form):
-    HN = forms.CharField(label='HN', required=True, widget=forms.TextInput(attrs={'id': 'hn', 'placeholder': 'HN'}))
+    HN = forms.CharField(
+        label='HN',
+        required=True,
+        widget=forms.TextInput(attrs={
+            'id': 'hn',
+            'placeholder': 'HN'
+        })
+    )
 
 
 class HNTextField(forms.Form):
     HN = forms.CharField(
-        label='HN', required=True,
-        widget=forms.Textarea(
-            attrs={'id': 'hnbox', 'placeholder': 'Up to 10 HNs, separated by space bar', 'cols': '30', 'rows': '5'}
-        )
+        label='HN',
+        required=True,
+        widget=forms.Textarea(attrs={
+            'id': 'hnbox',
+            'placeholder': 'Up to 10 HNs, separated by space bar',
+            'cols': '30',
+            'rows': '5'
+        })
     )
 
 
@@ -19,15 +30,29 @@ class PatientData(HNArray):
     #     label='Register', required=False,
     #     widget=forms.CheckboxInput(attrs={'id': 'regis', 'value': 'register', 'checked': 'True'})
     birthDate = forms.DateField(
-        label='Date of Birth', required=False, widget=forms.DateInput(attrs={'id': 'birthdate', 'IPD': 'date'})
+        label='Date of Birth',
+        required=False,
+        widget=forms.DateInput(attrs={
+            'id': 'birthdate',
+            'IPD': 'date'
+        })
     )
     gender = forms.ChoiceField(
-        label='Gender', required=False, choices=[(True, 'Male'), (False, 'Female')],
+        label='Gender',
+        required=False,
+        choices=[
+            (True, 'Male'),
+            (False, 'Female')
+        ],
         widget=forms.Select(attrs={'id': 'gender'})
     )
     name = forms.CharField(
-        label='Full Name', required=False,
-        widget=forms.TextInput(attrs={'id': 'name', 'placeholder': 'Firstname Surname'})
+        label='Full Name',
+        required=False,
+        widget=forms.TextInput(attrs={
+            'id': 'name',
+            'placeholder': 'Firstname Surname'
+        })
     )
 
 

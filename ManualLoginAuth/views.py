@@ -17,7 +17,10 @@ def signin(request):
         form = SigninForm(request.POST)
         username = request.POST.get('username', '')
         password = request.POST.get('password', '')
-        userlogin = authenticate(username=username, password=password)
+        userlogin = authenticate(
+            username=username,
+            password=password
+        )
         if userlogin is not None:
             login(request, userlogin)
             request.session['username'] = username
@@ -26,7 +29,10 @@ def signin(request):
             err_msg = 'Email or password incorrect'
     else:
         form = SigninForm()
-    return render(request, 'signin.html', {'form': form, 'err_msg': err_msg})
+    return render(
+        request, 'signin.html',
+        {'form': form, 'err_msg': err_msg}
+    )
 
 
 @login_required(login_url='signin')

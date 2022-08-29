@@ -7,7 +7,7 @@
 
 {% endblock %}
 {% block form %}
-{#    <div><p id="log"></p></div><br>#}
+    {#    <div><p id="log"></p></div><br>#}
     <h3>Patient</h3>
     <h4>Textarea</h4>
     <form id="patientText" method="post">
@@ -27,18 +27,20 @@
                 </div>
             {% endfor %}
         </div>
-{#        {{ hndataform.as_p }}#}
-{#                <input IPD="text" name="hn" id="hn" placeholder="HN">#}
-{#        <input IPD="checkbox" id="register" value="Register" checked>#}
-{#        <label for="register">Register</label><br>#}
+        {#        {{ hndataform.as_p }}#}
+        {#                <input IPD="text" name="hn" id="hn" placeholder="HN">#}
+        {#        <input IPD="checkbox" id="register" value="Register" checked>#}
+        {#        <label for="register">Register</label><br>#}
         <input type="button" value="Add more HN" id="add-hn-button">
         <input type="button" value="Remove Selected" id="remove-hn-button">
-{#        <a href="#" id="add-hn-button" class="btn btn-info add-hn">Add more HN</a>#}
-{#        <a href="#" id="remove-hn-button" class="btn btn-info remove-hn">Remove Selected</a>#}
+        {#        <a href="#" id="add-hn-button" class="btn btn-info add-hn">Add more HN</a>#}
+        {#        <a href="#" id="remove-hn-button" class="btn btn-info remove-hn">Remove Selected</a>#}
         <br><input type="button" value="Submit HN" id="hndataform-submit">
 
     </form>
-    <br><div><p id="hn_log"></p></div>
-    <br><div><p id="num"></p></div>
+    <br>
+    <div><p id="hn_log"></p></div>
+    <br>
+    <div><p id="num"></p></div>
 
 {% endblock %}

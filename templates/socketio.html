@@ -3,8 +3,8 @@
 {% block title %}Django-socketio test{% endblock %}
 
 {% block script %}
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/socket.io@4.5.1/client-dist/socket.io.js"></script>
+    <script src="https://unpkg.com/jquery/dist/jquery.js"></script>
+    <script src="https://unpkg.com/socket.io-client/dist/socket.io.js"></script>
     <script type="text/html" id="hn-template">
         <div id="hn-__prefix__">
             {{ hndataform.empty_form }}
@@ -16,9 +16,9 @@
         </div>
     </script>
     <script type="text/javascript" charset="UTF-8">
-        $(document).ready(function(){
+        $(document).ready(function () {
             // Connection
-            const socket = io({autoConnect:true});
+            const socket = io({autoConnect: true});
             socket.on('connect', function () {
                 socket.emit('event', {data: 'Transmission Test Passed'});
             });
@@ -30,21 +30,23 @@
             });
             // HN Page
             // Textarea
-            $('#hntext-submit').click(function() {
+            $('#hntext-submit').click(function () {
                 let hnArr = $('textarea#hnbox').val().split(" ", 10);
                 // console.log(hnArr);
                 socket.emit('patient', hnArr);
             });
+
             // Text Input
             function add_line(set, template, maxnum, total) {
                 let count = set.children().length;
                 const templateMarkup = template.html();
                 let compiledTemplate = templateMarkup.replace(/__prefix__/g, count);
-                if (count < maxnum.val()){
+                if (count < maxnum.val()) {
                     set.append(compiledTemplate);
-                    total.attr('value', count+1);
+                    total.attr('value', count + 1);
                 }
             }
+
             function remove_line(set, template, maxnum, total) {
                 //if (set.children().length > 1) {
                 $(':checkbox:checked').parent().remove();
@@ -55,7 +57,8 @@
                 }
                 //}
             }
-            $('#add-hn-button').click(function() {
+
+            $('#add-hn-button').click(function () {
                 add_line($('#hn-set'), $('#hn-template'), $('#hn-MAX_NUM_FORMS'), $('#hn-TOTAL_FORMS'));
             });
             $('#remove-hn-button').click(function () {
@@ -70,7 +73,7 @@
                     }
                 }*/
             });
-            $('#hndataform-submit').click(function() {
+            $('#hndataform-submit').click(function () {
                 let hnRaw = $(':text').serializeArray();
                 //console.log(hnRaw);
                 let hnArr = [];
@@ -96,12 +99,12 @@
                 socket.emit('patient', {data, $('#register').prop('checked')};
                 {% endcomment %}
             });
-            socket.on('hn_response', function(msg) {
+            socket.on('hn_response', function (msg) {
                 $('#hn_log').text(msg.data)
                 //        {#$('#hn_log').html(msg.data + '<br>' + msg.register)#}
             });
             //Visit Page
-            $('#add-txn-button').click(function() {
+            $('#add-txn-button').click(function () {
                 add_line($('#txn-set'), $('#txn-template'), $('#txn-MAX_NUM_FORMS'), $('#txn-TOTAL_FORMS'));
             });
             $('#remove-txn-button').click(function () {
@@ -113,15 +116,20 @@
                 }*/
                 remove_line($('#txn-set'), $('#txn-template'), $('#txn-MAX_NUM_FORMS'), $('#txn-TOTAL_FORMS'));
             });
+
             function TXNForm(hn, txn, ipd) {
                 this.HN = hn;
                 this.TXN = txn;
-                this.IPD = ipd;
+                this.IPD = (ipd === "True");
             }
-            $('#txn-submit').click(function() {
+
+            $('#txn-submit').click(function () {
                 let txnRaw = $(':text').serializeArray();
                 $(':selected').map(function () {
-                    txnRaw.push({'name': $(this).parent().attr('name'), 'value': this.value})
+                    txnRaw.push({
+                        'name': $(this).parent().attr('name'),
+                        'value': this.value
+                    })
                 });
                 let txnselect = txnRaw.sort(function (a, b) {
                     if (a['name'] < b['name']) {
@@ -134,32 +142,31 @@
                 });
                 console.log(txnselect)
                 let txnselect2 = [];
-                /*for (let i in txnselect) {
-                    console.log(txnselect[i]['name']);
-                    console.log(txnselect[i]['value']);
-                    console.log(txnselect[i]['name']: txnselect[i]['value']);
-                };*/
-                for (let i = 0; i < txnselect.length ; i = i + 3) {
-                    const objbuffer = new TXNForm(txnselect[i]['value'], txnselect[i+2]['value'], txnselect[i+1]['value']);
+                for (let i = 0; i < txnselect.length; i = i + 3) {
+                    const objbuffer = new TXNForm(
+                        txnselect[i]['value'],
+                        txnselect[i + 2]['value'],
+                        txnselect[i + 1]['value']
+                    );
                     txnselect2.push(objbuffer);
                 }
                 console.log(txnselect2);
                 socket.emit('visit', txnselect2);
             });
 
-            socket.on('txn_response', function(msg) {
+            socket.on('txn_response', function (msg) {
                 $('#txn_log').text(msg.data);
             });
         });
-            {% comment %}
-            $('form#item').submit(function(event) {
-                socket.emit('item', {ser: $('#ser').val(), txn: $('#txn').val(), hn: $('#hn').val()});
-                return false;
-            });
-            socket.on('ser_response', function(msg) {
-                $('#ser_log').text(msg.data);
+        {% comment %}
+        $('form#item').submit(function(event) {
+            socket.emit('item', {ser: $('#ser').val(), txn: $('#txn').val(), hn: $('#hn').val()});
+            return false;
+        });
+        socket.on('ser_response', function(msg) {
+            $('#ser_log').text(msg.data);
 
-            });{% endcomment %}
+        });{% endcomment %}
     </script>
     {% block formscript %}{% endblock %}
 {% endblock %}

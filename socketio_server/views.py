@@ -7,13 +7,28 @@ from .forms import PatientData, HNArray, HNTextField, VisitData
 sio = socketio.AsyncServer(async_mode='asgi')
 # background_task_started = False
 # patientdataset = formset_factory(PatientData, can_delete=True, max_num=10, absolute_max=1000)
-hnformset = formset_factory(HNArray, can_delete=True, max_num=10, absolute_max=1000)
-visitformset = formset_factory(VisitData, can_delete=True, max_num=10, absolute_max=1000)
+hnformset = formset_factory(
+    HNArray,
+    can_delete=True,
+    max_num=10,
+    absolute_max=1000
+)
+visitformset = formset_factory(
+    VisitData,
+    can_delete=True,
+    max_num=10,
+    absolute_max=1000
+)
 
 
 @login_required(login_url='signin')
 def index(request):
     return render(request, 'socketio.html')
+
+
+@sio.on('connect')
+async def test_connect(sid, environ):
+    await sio.emit('response', {'data': 'Connected to Database'}, room=sid)
 
 
 """
@@ -26,8 +41,17 @@ SER (Serial number of item) to IID (item identification number)
 @login_required(login_url='signin')
 def patient_page(request):
     hntext = HNTextField()
-    hndataform = hnformset(prefix='hn', auto_id=True)
-    return render(request, 'patient.html', {'hntext': hntext, 'hndataform': hndataform})
+    hndataform = hnformset(
+        prefix='hn',
+        auto_id=True
+    )
+    return render(
+        request, 'patient.html',
+        {
+            'hntext': hntext,
+            'hndataform': hndataform
+        }
+    )
 
 
 # As Join room to ensure that only current HN will be collected.
@@ -58,8 +82,14 @@ async def patient(sid, message):  # Receive only HN
 # Visit data (HN, TXN) >> Transform >> PID, TXN >> Upsert TXN >> PID, VID
 @login_required(login_url='signin')
 def visit_page(request):
-    visitform = visitformset(prefix='txn', auto_id=True)
-    return render(request, 'visit.html', {'visitform': visitform})
+    visitform = visitformset(
+        prefix='txn',
+        auto_id=True
+    )
+    return render(
+        request, 'visit.html',
+        {'visitform': visitform}
+    )
 
 
 @sio.on('visit')  # sio.on('visit', req)
@@ -106,11 +136,6 @@ async def visit(sid, message):
     ]
     """
     # await sio.emit('thVisit', {data, register}, room=sid)
-
-
-@sio.on('connect')
-async def test_connect(sid, environ):
-    await sio.emit('response', {'data': 'Connected to Database'}, room=sid)
 
 
 # Item data (HN, TXN, SER) >> Transform >> PID, VID, IID
