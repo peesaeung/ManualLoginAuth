@@ -1,5 +1,5 @@
 django~=6.1
 pathlib~=1.0.1
 python-socketio
-uvicorn~=0.52.4
+uvicorn~=0.53.0
 websockets
